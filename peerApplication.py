@@ -1,20 +1,47 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QTableWidgetItem
 import sys
 import os
+
+from PySide2.QtGui import QStandardItem
+
 
 class PeerApplication(QtWidgets.QMainWindow):
     def __init__(self):
         super(PeerApplication, self).__init__()
         os.system("pyuic5 -x GUI/gui.ui -o GUI/gui.py")  # compile the gui
         from GUI.gui import Ui_MainWindow  # import the newly compiled gui
-        ui = Ui_MainWindow()  # create an instance of the GUI
-        ui.setupUi(self)
+        self.ui = Ui_MainWindow()  # create an instance of the GUI
+        self.ui.setupUi(self)
+        self.configure()
         self.show()
 
     # override the closeEvent method
     def closeEvent(self, event):
         print ("User has clicked the red x on the main window")
         event.accept()
+
+    def configure(self):
+        self.ui.connect.clicked.connect(self.makeConnection)
+        self.ui.search.clicked.connect(self.search)
+        self.ui.go.clicked.connect(self.enterCommand)
+        self.ui.results.setRowCount(2)
+        self.ui.results.setColumnCount(2)
+        self.ui.results.setItem(0, 0, QTableWidgetItem("First Name"))
+        self.ui.results.setItem(0, 1, QTableWidgetItem("Last Name"))
+        self.ui.results.setItem(1, 0, QTableWidgetItem("Aaron"))
+        self.ui.results.setItem(1, 1, QTableWidgetItem("Kopplin"))
+
+    def makeConnection(self):
+        print("connecting to server")
+        print(self.ui.server)
+
+    def search(self):
+        print("searching server for \"" + self.ui.keyword.text() + "\"")
+
+    def enterCommand(self):
+        self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())
+        self.ui.command.clear()
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

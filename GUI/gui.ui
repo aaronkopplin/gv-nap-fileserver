@@ -128,7 +128,7 @@
         </layout>
        </item>
        <item>
-        <widget class="QTableView" name="results"/>
+        <widget class="QTableWidget" name="results"/>
        </item>
       </layout>
      </widget>
