@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import QTableWidgetItem
 import sys
 import os
 
-from PySide2.QtGui import QStandardItem
-
 
 class PeerApplication(QtWidgets.QMainWindow):
     def __init__(self):
@@ -33,8 +31,7 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui.results.setItem(1, 1, QTableWidgetItem("Kopplin"))
 
     def makeConnection(self):
-        print("connecting to server")
-        print(self.ui.server)
+        print("connecting to server: " + self.ui.server.text())
 
     def search(self):
         print("searching server for \"" + self.ui.keyword.text() + "\"")
