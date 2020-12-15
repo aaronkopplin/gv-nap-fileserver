@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QTableWidgetItem
+from peer import Peer
 import sys
 import os
 
@@ -12,6 +13,7 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()  # create an instance of the GUI
         self.ui.setupUi(self)
         self.configure()
+        self.peer = Peer()
         self.show()
 
     # override the closeEvent method
@@ -32,6 +34,8 @@ class PeerApplication(QtWidgets.QMainWindow):
 
     def makeConnection(self):
         print("connecting to server: " + self.ui.server.text())
+        self.peer.connect(self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
+                          self.ui.hostname.text(), self.ui.speed.text())
 
     def search(self):
         print("searching server for \"" + self.ui.keyword.text() + "\"")
@@ -39,6 +43,7 @@ class PeerApplication(QtWidgets.QMainWindow):
     def enterCommand(self):
         self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())
         self.ui.command.clear()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
