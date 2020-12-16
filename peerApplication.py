@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem, QHeaderView
 from peer import Peer
 import sys
 import os
@@ -25,20 +25,39 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui.connect.clicked.connect(self.makeConnection)
         self.ui.search.clicked.connect(self.search)
         self.ui.go.clicked.connect(self.enterCommand)
-        self.ui.results.setRowCount(2)
-        self.ui.results.setColumnCount(2)
-        self.ui.results.setItem(0, 0, QTableWidgetItem("First Name"))
-        self.ui.results.setItem(0, 1, QTableWidgetItem("Last Name"))
-        self.ui.results.setItem(1, 0, QTableWidgetItem("Aaron"))
-        self.ui.results.setItem(1, 1, QTableWidgetItem("Kopplin"))
 
-    def makeConnection(self):
+        # TODO: remove this
+        self.ui.server.setText("127.0.0.2")
+        self.ui.port.setText("3000")
+        self.ui.username.setText("username")
+        self.ui.hostname.setText("hostname")
+
+        self.ui.speed.addItem("Ethernet")
+        self.ui.speed.addItem("Modem")
+        self.ui.speed.addItem("T1")
+        self.ui.speed.addItem("T3")
+
+    def makeConnection(self, command=None, keyword=None):
         print("connecting to server: " + self.ui.server.text())
-        self.peer.connect(self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
-                          self.ui.hostname.text(), self.ui.speed.text())
+        if not command:
+            command = 'connect'
+        self.peer.connect(command, self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
+                          self.ui.hostname.text(), self.ui.speed.currentText())
 
     def search(self):
         print("searching server for \"" + self.ui.keyword.text() + "\"")
+        self.makeConnection('search', keyword=self.ui.keyword.text())
+
+        # Clear the current rows
+        self.ui.results.setRowCount(0)
+
+        # Display all of the files
+        for file in self.peer.files:
+            self.ui.results.insertRow(self.ui.results.rowCount())
+            rowIndex = self.ui.results.rowCount() - 1
+            self.ui.results.setItem(rowIndex, 0, QTableWidgetItem(file.find('speed').text))
+            self.ui.results.setItem(rowIndex, 1, QTableWidgetItem(file.find('hostname').text))
+            self.ui.results.setItem(rowIndex, 2, QTableWidgetItem(file.find('filename').text))
 
     def enterCommand(self):
         self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())

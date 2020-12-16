@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<files>
+    <file>
+        <speed>T1</speed>
+        <hostname>DCCLIENT9.dcc9.local/148.61.112.42</hostname>
+        <filename>Abhay.txt</filename>
+        <keywords>
+            <keyword>best</keyword>
+            <keyword>test</keyword>
+        </keywords>
+    </file>
+    <file>
+        <speed>Ethernet</speed>
+        <hostname>DCCLIENT/148.61.112.49</hostname>
+        <filename>Vinay.txt</filename>
+        <keywords>
+            <keyword>worst</keyword>
+            <keyword>test</keyword>
+        </keywords>
+    </file>
+</files>
