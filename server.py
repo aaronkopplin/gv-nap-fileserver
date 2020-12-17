@@ -43,7 +43,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
                     if not foundMatch:
                         fileMatches.remove(file)
 
-                messenger.send(ET.tostring(files, encoding='utf8', method='xml'))
+                messenger.send(ET.tostring(fileMatches, encoding='utf8', method='xml'))
                 messenger.close()
 
             elif command == 'get':
