@@ -19,9 +19,9 @@ class Peer:
                 # Send user info
                 peer.send("{} ".format(command).encode())
                 peer.send('{} '.format(keyword).encode())
-                peer.send(username.encode())
-                peer.send(hostname.encode())
-                peer.send(speed.encode())
+                peer.send('{} '.format(username).encode())
+                peer.send('{} '.format(hostname).encode())
+                peer.send('{} '.format(speed).encode())
 
                 # Send files if not already connected
                 if not self.connected:

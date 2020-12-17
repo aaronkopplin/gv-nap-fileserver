@@ -58,6 +58,8 @@ class PeerApplication(QtWidgets.QMainWindow):
 
     def enterCommand(self):
         self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())
+        self.makeConnection(self.ui.command.text().split()[0], self.ui.command.text().split()[1])
+
         self.ui.command.clear()
 
 

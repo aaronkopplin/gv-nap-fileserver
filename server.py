@@ -2,6 +2,7 @@ import socket
 import globals
 import xml.etree.ElementTree as ET
 import copy
+from user import User
 
 users = []
 
@@ -20,6 +21,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
             print("> " + received_message.decode("utf-8"))
             message = received_message.decode('utf-8').split()
             command = message[0]
+            username = message[2]
+            hostname = message[3]
+            speed = message[4]
 
             if command == 'search':
                 searchKeyword = message[1]
@@ -41,14 +45,36 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
 
                 messenger.send(ET.tostring(files, encoding='utf8', method='xml'))
                 messenger.close()
+
+            elif command == 'get':
+                fileName = message[1]
+
+                #for file in files:
+                    # Search for file name
+                    #if file.find('filename').text == fileName:
+
+
             else:
 
+                registered = False
+                for user in users:
+                    if username == user.getUsername():
+                        registered = True
                 # Parse xml containing file info
                 try:
                     test = messenger.recv(2048).decode()
                     root = ET.fromstring(test)
-                    for file in root.iter('file'):
-                        files.append(file)
+
+                    # Registers new user if the user does not exist already
+                    if not registered:
+                        newUser = User(username)
+                        for file in root.iter('file'):
+                            files.append(file)
+                            newUser.addFile(file)
+                        users.append(newUser)
+                    else:
+                        for file in root.iter('file'):
+                            files.append(file)
                 except Exception as e:
                     print(e)
                     pass
