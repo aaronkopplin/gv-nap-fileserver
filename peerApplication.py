@@ -18,7 +18,7 @@ class PeerApplication(QtWidgets.QMainWindow):
 
     # override the closeEvent method
     def closeEvent(self, event):
-        print ("User has clicked the red x on the main window")
+        # print ("User has clicked the red x on the main window")
         event.accept()
 
     def configure(self):
@@ -27,7 +27,7 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui.go.clicked.connect(self.enterCommand)
         self.ui.server.setText("127.0.0.2")
         self.ui.port.setText("3000")
-        self.ui.username.setText("username")
+        self.ui.username.setText("tom")
         self.ui.hostname.setText("hostname")
         self.ui.speed.addItem("Ethernet")
         self.ui.speed.addItem("Modem")
@@ -35,32 +35,73 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui.speed.addItem("T3")
 
     def makeConnection(self, command=None, keyword=None):
-        print("connecting to server: " + self.ui.server.text())
-        if not command:
-            command = 'connect'
-        self.peer.connect(command, self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
-                          self.ui.hostname.text(), self.ui.speed.currentText(), keyword=keyword)
+        numPeers = self.peer.connectToServer(self.ui.server.text(),
+                                  int(self.ui.port.text()),
+                                  self.ui.username.text(),
+                                  self.ui.speed.currentText())
+        self.ui.commandLine.appendPlainText(">> " + "Connected to server, Users online: " + numPeers)
+
+        # print("connecting to server: " + self.ui.server.text())
+        # if not command:
+        #     command = 'connect'
+        # self.peer.connect(command, self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
+        #                   self.ui.hostname.text(), self.ui.speed.currentText(), keyword=keyword)
 
     def search(self):
-        print("searching server for \"" + self.ui.keyword.text() + "\"")
-        self.makeConnection('search', keyword=self.ui.keyword.text())
+        searchTerm = self.ui.keyword.text()
+        if searchTerm:
+            fileData = self.peer.searchServer(searchTerm)
+            if fileData:
+                tokens = fileData.split(",")
+                while tokens:
+                    speed = tokens.pop(0)
+                    username = tokens.pop(0)
+                    fileName = tokens.pop(0)
+                    self.ui.results.insertRow(self.ui.results.rowCount())
+                    rowIndex = self.ui.results.rowCount() -1
+                    self.ui.results.setItem(rowIndex, 0, QTableWidgetItem(speed))
+                    self.ui.results.setItem(rowIndex, 1, QTableWidgetItem(username))
+                    self.ui.results.setItem(rowIndex, 2, QTableWidgetItem(fileName))
 
-        # Clear the current rows
-        self.ui.results.setRowCount(0)
-
-        # Display all of the files
-        for file in self.peer.files:
-            self.ui.results.insertRow(self.ui.results.rowCount())
-            rowIndex = self.ui.results.rowCount() - 1
-            self.ui.results.setItem(rowIndex, 0, QTableWidgetItem(file.find('speed').text))
-            self.ui.results.setItem(rowIndex, 1, QTableWidgetItem(file.find('hostname').text))
-            self.ui.results.setItem(rowIndex, 2, QTableWidgetItem(file.find('filename').text))
+        # print("searching server for \"" + self.ui.keyword.text() + "\"")
+        # self.makeConnection('search', keyword=self.ui.keyword.text())
+        #
+        # # Clear the current rows
+        # self.ui.results.setRowCount(0)
+        #
+        # # Display all of the files
+        # for file in self.peer.files:
+        #     self.ui.results.insertRow(self.ui.results.rowCount())
+        #     rowIndex = self.ui.results.rowCount() - 1
+        #     self.ui.results.setItem(rowIndex, 0, QTableWidgetItem(file.find('speed').text))
+        #     self.ui.results.setItem(rowIndex, 1, QTableWidgetItem(file.find('hostname').text))
+        #     self.ui.results.setItem(rowIndex, 2, QTableWidgetItem(file.find('filename').text))
 
     def enterCommand(self):
-        self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())
-        self.makeConnection(self.ui.command.text().split()[0], self.ui.command.text().split()[1])
+        if (self.ui.command.text()) == "listen":
+            self.ui.commandLine.appendPlainText(">> Listening for file requests...")
+            requestedFileName = self.peer.notifyServer(self.ui.username.text())
+            self.ui.commandLine.appendPlainText(">> " + "Peer requested: " + requestedFileName)
 
-        self.ui.command.clear()
+        else:
+            # we are requesting a file from another peer
+            request = self.ui.command.text().split(" ")  # username file
+            if len(request) == 2:
+                username = request[0]
+                filename = request[1]
+                # self.peer.requestHostPort(request[0])
+                self.ui.commandLine.appendPlainText(">> Requesting " + filename + " from " + username)
+                requestedFileText = self.peer.fetchFile(username, filename)
+                self.ui.commandLine.appendPlainText(">> Received!")
+                self.ui.commandLine.appendPlainText(">> " + requestedFileText)
+            else:
+                print("please enter <username> <filename>")
+
+
+        # if len(self.ui.command.text()) > 0:
+        #     self.ui.commandLine.appendPlainText(">> " + self.ui.command.text())
+        #     self.makeConnection(self.ui.command.text().split()[0], self.ui.command.text().split()[1])
+        #     self.ui.command.clear()
 
 
 if __name__ == "__main__":

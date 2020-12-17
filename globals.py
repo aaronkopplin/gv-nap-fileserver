@@ -1,3 +1,8 @@
 HOST = '127.0.0.2'
 PORT = 3000
+FILE_NOT_FOUND_ERROR = "-1"
+INITIAL_CONNECTION = "initial"
+KEYWORD_SEARCH = "keyword"
+SERVER_NOTIFICATION = "notification"
+FILE_REQUEST = "request"
 
