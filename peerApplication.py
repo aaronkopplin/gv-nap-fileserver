@@ -25,13 +25,10 @@ class PeerApplication(QtWidgets.QMainWindow):
         self.ui.connect.clicked.connect(self.makeConnection)
         self.ui.search.clicked.connect(self.search)
         self.ui.go.clicked.connect(self.enterCommand)
-
-        # TODO: remove this
         self.ui.server.setText("127.0.0.2")
         self.ui.port.setText("3000")
         self.ui.username.setText("username")
         self.ui.hostname.setText("hostname")
-
         self.ui.speed.addItem("Ethernet")
         self.ui.speed.addItem("Modem")
         self.ui.speed.addItem("T1")
@@ -42,7 +39,7 @@ class PeerApplication(QtWidgets.QMainWindow):
         if not command:
             command = 'connect'
         self.peer.connect(command, self.ui.server.text(), int(self.ui.port.text()), self.ui.username.text(),
-                          self.ui.hostname.text(), self.ui.speed.currentText())
+                          self.ui.hostname.text(), self.ui.speed.currentText(), keyword=keyword)
 
     def search(self):
         print("searching server for \"" + self.ui.keyword.text() + "\"")
